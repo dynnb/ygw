@@ -29,8 +29,8 @@ class YGW(Tk):
     def _set_window(self):
         self.title("查询器")
         #设置窗口大小
-        self.width = 825
-        self.height = 700
+        self.width = 830
+        self.height = 800
         #获取屏幕尺寸以计算布局参数，使窗口居屏幕中央
         screenwidth = self.winfo_screenwidth() 
         screenheight = self.winfo_screenheight()
@@ -110,7 +110,7 @@ class YGW(Tk):
         else:
             self.result_list = list(self.collection.find())
         # print(query_list)
-        print("查询到 {} 条数据".format(len(list(self.result_list))))
+        # print("查询到 {} 条数据".format(len(list(self.result_list))))
         self.after_select()
     def show_card_info(self, event):
         self.index = self.listbox.curselection()[0]
@@ -120,7 +120,7 @@ class YGW(Tk):
 
     def set_card_img(self):
         self.card = self.result_list[self.index]
-        print("你选择了{}".format(self.card['name_nw']))
+        # print("你选择了{}".format(self.card['name_nw']))
         card_img_path = "data/card_icon/{}.jpg"
         img = Image.open(card_img_path.format(self.card['name_nw']))  # 打开图片
         self.photo = ImageTk.PhotoImage(img)  # 用PIL模块的PhotoImage打开
@@ -132,9 +132,12 @@ class YGW(Tk):
     def after_select(self):
         self.result_window.destroy()
         self._create_result_window()
+
         self.index = 0
         self.set_card_img()
 
+        self.show_card_info_window.destroy()
+        self._create_card_info_window()
     def just_card_type(self, event):
         self.__keywords.set('')
         # self.__rare.set("全部卡片")
@@ -151,7 +154,7 @@ class YGW(Tk):
         
         card_type = self.__card_type.get()
         if card_type == "全部卡片":
-            print("选择了全部类型")
+            # print("选择了全部类型")
             self.result_list = list(self.collection.find())
             self.after_select()
             self.monster_window.grid(row=3, column=0, rowspan=4, columnspan=7, pady=5, sticky=S+N+W+E)
@@ -162,7 +165,7 @@ class YGW(Tk):
             # self.sort_way_window.grid(row=12, column=0, columnspan=7, pady=5, sticky=S+N+W+E)
 
         elif card_type == "怪兽":
-            print("选择了怪兽")
+            # print("选择了怪兽")
             query = {"$or":[{'type_st':{'$regex': "怪兽"}},{'name':{'$regex': "怪兽"}}]}
             self.result_list = list(self.collection.find(query))
             self.after_select()
@@ -174,7 +177,7 @@ class YGW(Tk):
             # self.sort_way_window.grid(row=12, column=0, columnspan=7, pady=5, sticky=S+N+W+E)
 
         else:
-            print("选择了魔法或陷阱")
+            # print("选择了魔法或陷阱")
             query = {"$or":[{'type_st':{'$regex': card_type}},{'name':{'$regex': card_type}}]}
             self.result_list = list(self.collection.find(query))
             self.after_select()
@@ -186,38 +189,93 @@ class YGW(Tk):
             # self.sort_way_window.grid_forget()
 
     def _create_card_info_window(self):
-        self.show_card_info_window = LabelFrame(self.result_window, width=400, height=390,bg='darkgray')
+        self.show_card_info_window = LabelFrame(self.result_window, width=450, height=390,bg='darkgray')
         self.show_card_info_window.grid(row=1, column=0,columnspan=2, padx=5, pady=5)
 
         self.name_cn_key = Label(self.show_card_info_window,text = "中文名", background="gray",width=10)
         self.name_cn_key.grid(row=0, column=0, sticky=W+E)
-        self.name_cn_value = Label(self.show_card_info_window, text=self.card['name_nw'],width=30)
+        self.name_cn_value = Label(self.show_card_info_window, text=self.card['name_nw'],width=40)
         self.name_cn_value.grid(row=0, column=1, columnspan=5, sticky=W+E)
 
         self.name_ja_key = Label(self.show_card_info_window,text = "日文名", background="gray",width=10)
         self.name_ja_key.grid(row=1, column=0, sticky=W+E)
-        self.name_ja_value = Label(self.show_card_info_window, text=self.card['name_ja'],width=30)
+        self.name_ja_value = Label(self.show_card_info_window, text=self.card['name_ja'],width=40)
         self.name_ja_value.grid(row=1, column=1, columnspan=5, sticky=W+E)
 
         self.name_en_key = Label(self.show_card_info_window,text = "英文名", background="gray",width=10)
         self.name_en_key.grid(row=2, column=0, sticky=W+E)
-        self.name_en_value = Label(self.show_card_info_window, text=self.card['name_en'],width=30)
+        self.name_en_value = Label(self.show_card_info_window, text=self.card['name_en'],width=40)
         self.name_en_value.grid(row=2, column=1, columnspan=5, sticky=W+E)
 
         self.type_key = Label(self.show_card_info_window,text = "卡片种类", background="gray",width=10)
         self.type_key.grid(row=3, column=0, sticky=W+E)
-        self.type_value = Label(self.show_card_info_window, text=self.card['type_st'],width=30)
+        self.type_value = Label(self.show_card_info_window, text=self.card['type_st'],width=40)
         self.type_value.grid(row=3, column=1, columnspan=5, sticky=W+E)
 
         self.password_key = Label(self.show_card_info_window,text = "卡片密码", background="gray",width=10)
         self.password_key.grid(row=4, column=0, sticky=W+E)
-        self.password_value = Label(self.show_card_info_window, text=self.card['password'],width=30)
+        self.password_value = Label(self.show_card_info_window, text=self.card['password'],width=40)
         self.password_value.grid(row=4, column=1, columnspan=5, sticky=W+E)
 
         self.rare_key = Label(self.show_card_info_window,text = "稀有度", background="gray",width=10)
         self.rare_key.grid(row=5, column=0, sticky=W+E)
-        self.rare_value = Label(self.show_card_info_window, text=self.card['rare'],width=30)
+        self.rare_value = Label(self.show_card_info_window, text=self.card['rare'],width=40)
         self.rare_value.grid(row=5, column=1, columnspan=5, sticky=W+E)
+
+        self.desc_key = Label(self.show_card_info_window,text = "效果", background="darkgreen",width=50)
+        self.desc_key.grid(row=8, columnspan=6, sticky=W+E)
+        self.desc_value = Label(self.show_card_info_window,text=self.card["desc_nw"],wraplength=340, background="gray",width=50)
+        self.desc_value.grid(row=9,columnspan=6,sticky=W+E)
+
+        if "怪兽" in self.card['type_st']:
+            if "连接" not in self.card['type_st']:
+                self.rare_key = Label(self.show_card_info_window,text = "种族", background="darkgreen")
+                self.rare_key.grid(row=6,column=0,sticky=W+E)
+                self.rare_value = Label(self.show_card_info_window,text=self.card["race"],background="gray")
+                self.rare_value.grid(row=6,column=1,sticky=W+E)
+
+                self.attribute_key = Label(self.show_card_info_window,text = "属性", background="darkgreen")
+                self.attribute_key.grid(row=6,column=2,sticky=W+E)
+                self.attribute_value = Label(self.show_card_info_window,text=self.card["attribute"],background="gray")
+                self.attribute_value.grid(row=6,column=3,sticky=W+E)
+
+                if "XYZ" not in self.card['type_st']:
+                    self.level_key = Label(self.show_card_info_window,text = "星级", background="darkgreen")
+                else:
+                    self.level_key = Label(self.show_card_info_window,text = "阶级", background="darkgreen")
+                self.level_key.grid(row=6,column=4,sticky=W+E)
+                self.level_value = Label(self.show_card_info_window,text=self.card["level"],background="gray")
+                self.level_value.grid(row=6,column=5,sticky=W+E)
+
+                self.attribute_key = Label(self.show_card_info_window,text = "攻击力", background="darkgreen")
+                self.attribute_key.grid(row=7,column=0,sticky=W+E)
+                self.attribute_value = Label(self.show_card_info_window,text=self.card["atk"],background="gray")
+                self.attribute_value.grid(row=7,column=1,sticky=W+E)
+
+                self.attribute_key = Label(self.show_card_info_window,text = "防御力", background="darkgreen")
+                self.attribute_key.grid(row=7,column=3,sticky=W+E)
+                self.attribute_value = Label(self.show_card_info_window,text=self.card["def"],background="gray")
+                self.attribute_value.grid(row=7,column=4,sticky=W+E)
+            else:
+                self.rare_key = Label(self.show_card_info_window,text = "种族", background="darkgreen")
+                self.rare_key.grid(row=6,column=0,sticky=W+E)
+                self.rare_value = Label(self.show_card_info_window,text=self.card["race"],background="gray")
+                self.rare_value.grid(row=6,column=1,columnspan=2,sticky=W+E)
+
+                self.attribute_key = Label(self.show_card_info_window,text = "属性", background="darkgreen")
+                self.attribute_key.grid(row=6,column=2,sticky=W+E)
+                self.attribute_value = Label(self.show_card_info_window,text=self.card["attribute"],background="gray")
+                self.attribute_value.grid(row=6,column=3,columnspan=2,sticky=W+E)
+
+                self.attribute_key = Label(self.show_card_info_window,text = "攻击力", background="darkgreen")
+                self.attribute_key.grid(row=7,column=0,sticky=W+E)
+                self.attribute_value = Label(self.show_card_info_window,text=self.card["atk"],background="gray")
+                self.attribute_value.grid(row=7,column=1,columnspan=2,sticky=W+E)
+
+                self.attribute_key = Label(self.show_card_info_window,text = "LINK", background="darkgreen")
+                self.attribute_key.grid(row=7,column=2,sticky=W+E)
+                self.attribute_value = Label(self.show_card_info_window,text=self.card["link"],background="gray")
+                self.attribute_value.grid(row=7,column=3,columnspan=2,sticky=W+E)
 
     def _create_search_window(self):
         self.search_window = LabelFrame(self, width= 400, height=700)
@@ -386,21 +444,6 @@ class YGW(Tk):
             counter4 += 1 
             checkbutton.grid(row=10+counter4//7, column=1+counter4%7, padx=3, pady=5)
 
-        #***************************卡片排序
-        # self.sort_way_window = LabelFrame(self.search_window)
-        # self.sort_way_window.grid(row=12, column=0, columnspan=7, pady=5, sticky=S+N+W+E)
-
-        # sort_way_label = Label(self.sort_way_window, text='排序')
-        # sort_way_label.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
-
-        # self.__sort_way=StringVar()#窗体自带的文本，新建一个值
-        # sortway_comboxlist=ttk.Combobox(self.sort_way_window, state="readonly", textvariable=self.__sort_way) #初始化  
-        # sortway_comboxlist["values"]=("卡片排序","等级从高到低","等级从低到高", "攻击力从大到小", "攻击力从小到大", "防御力从大到小", "防御力从小到大")  
-        # sortway_comboxlist.current(0)  #选择第一个  
-        # # sortway_comboxlist.bind("<<ComboboxSelected>>",self.just_card_type)  #绑定事件,(下拉列表框被选中时，绑定go()函数)  
-        # sortway_comboxlist.grid(row=0, column=2, columnspan=7, padx=80, pady=5)
-
-
         #***************************搜索按钮
         search_button = Button(self.search_window, text="搜索", command=self._search)
         search_button.grid(row=13, column=1, columnspan=7, padx=5, pady=15)
@@ -408,7 +451,7 @@ class YGW(Tk):
 
 
     def _create_result_window(self):
-        self.result_window = LabelFrame(self, width= 520, height=700, bg="red")
+        self.result_window = LabelFrame(self, width= 560, height=700, bg="black")
         self.result_window.grid(row=0, column=1, padx=5, pady=5, sticky=S+N+W+E)
         self.top_left_window = LabelFrame(self.result_window, width=210,height=240, bg='black')
         self.top_left_window.grid(row=0, column=0, sticky=S+N+W)
@@ -418,7 +461,7 @@ class YGW(Tk):
         scrollbar = Scrollbar(self.top_left_window)
         scrollbar.grid(row=0, column=1, sticky=W+E+S+N)
         
-        self.listbox = Listbox(self.top_left_window, width=22, height=19, selectmode=BROWSE, yscrollcommand=scrollbar.set,bg='gray')
+        self.listbox = Listbox(self.top_left_window, width=26, height=15, selectmode=BROWSE, yscrollcommand=scrollbar.set,bg='gray')
         self.listbox.grid(row=0,column=0, sticky=W+S+N)
         self.listbox.bind("<<ListboxSelect>>", self.show_card_info)
         # print(self.result_list[0])
@@ -427,7 +470,7 @@ class YGW(Tk):
 
         scrollbar.config(command=self.listbox.yview)
 
-        self.show_card_img = Label(self.result_window, width=230, image=self.photo, background="yellow")
+        self.show_card_img = Label(self.result_window, width=230, image=self.photo, background="gray")
         self.show_card_img.grid(row=0, column=1, sticky=S+N+E)
 if __name__ == "__main__":
     app = YGW()
